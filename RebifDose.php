@@ -18,11 +18,9 @@ class RebifDose {
   ];
 
   private $startDate;
-  private $internalDate;
 
   public function __construct(Carbon $startDate) {
     $this->startDate = $startDate;
-    $this->internalDate = $startDate;
   }
 
   public function getOptions(): array {
@@ -37,19 +35,21 @@ class RebifDose {
 
     $dayFound = false;
     $optionIndex = 0;
-    $today = Carbon::now();
+    $startDate = $this->startDate;
+    $today = Carbon::today();
 
     while(!$dayFound) {
 
       for($i = 0; $i < count($this->frequency); $i++) {
 
         $optionIndex++;
-        $this->internalDate->addDays($this->frequency[$i]);
 
-        if($this->internalDate->greaterThanOrEqualTo($today)) {
+        $startDate->addDays($this->frequency[$i]);
+
+        if($startDate->greaterThanOrEqualTo($today)) {
           $dayFound = true;
-          $string = "Next dose of rebif is due on {$this->internalDate->englishDayOfWeek} ({$this->internalDate->toFormattedDateString()}). Put it in your {$this->options[$optionIndex]}.";
-          $this->internalDate = $this->startDate;
+          $string = "Next dose of rebif is due on {$startDate->englishDayOfWeek} ({$startDate->toFormattedDateString()}).
+                    <br>Put it in your {$this->options[$optionIndex]}.";
           return $string;
         }
 
