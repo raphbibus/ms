@@ -18,47 +18,42 @@ class RebifDose {
   ];
 
   private $startDate;
+  private $optionsIndex = 0;
+  private $dayFound = false;
 
   public function __construct(Carbon $startDate) {
     $this->startDate = $startDate;
   }
 
-  public function getOptions(): array {
-    return $this->options;
-  }
+  public function nextDose() {
 
-  public function getFrequency(): array {
-    return $this->frequency;
-  }
-
-  public function getNextDoseDue(): string {
-
-    $dayFound = false;
-    $optionIndex = 0;
-    $startDate = $this->startDate;
     $today = Carbon::today();
 
-    while(!$dayFound) {
+    while(!$this->dayFound) {
 
-      for($i = 0; $i < count($this->frequency); $i++) {
+        foreach($this->frequency as $k => $f) {
 
-        $optionIndex++;
+            $this->startDate->addDays($f);
+            $this->nextOptionsIndex();
 
-        $startDate->addDays($this->frequency[$i]);
+            if($this->startDate->greaterThanOrEqualTo($today)) {
+              $this->dayFound = true;
+              $string = "Next dose of rebif is due on {$this->startDate->englishDayOfWeek} ({$this->startDate->toFormattedDateString()}).
+                        <br>Put it in your {$this->options[$this->optionsIndex]}.";
+              return $string;
+            }
 
-        if($startDate->greaterThanOrEqualTo($today)) {
-          $dayFound = true;
-          $string = "Next dose of rebif is due on {$startDate->englishDayOfWeek} ({$startDate->toFormattedDateString()}).
-                    <br>Put it in your {$this->options[$optionIndex]}.";
-          return $string;
         }
 
-      }
+    }
 
-      if($optionIndex == count($this->options)-1) {
-        $optionIndex = 0;
-      }
+  }
 
+  private function nextOptionsIndex() {
+
+    $this->optionsIndex++;
+    if($this->optionsIndex >= count($this->options)) {
+      $this->optionsIndex = 0;
     }
 
   }

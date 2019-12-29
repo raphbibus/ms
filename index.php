@@ -27,7 +27,7 @@ $rebifDose = new RebifDose(new Carbon("11/24/2019"));
 
             <div class="content">
                 <div class="title m-b-md" id="position">
-                    <?php echo $rebifDose->getNextDoseDue() ?>
+                    <?php echo $rebifDose->nextDose() ?>
                 </div>
             </div>
         </div>
